@@ -7,12 +7,13 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Data.SqlClient;
 
 namespace BasketballData
 {
     class Program
     {
-        class Node
+        public class Node
         {
             public string last;
             public string first;
@@ -35,7 +36,7 @@ namespace BasketballData
             }
         }
 
-        class LinkList
+        public class LinkList
         {
             public Node head;
             public int count;
@@ -117,14 +118,37 @@ namespace BasketballData
 
         }
 
+        public partial class sqlclass : LinkList
+        {
+            SqlConnection con = new SqlConnection(@"Data Source=DESKTOP-7P99TDD\MYMSSQLSERVER;Initial Catalog=Project1;Integrated Security=True;");
+            SqlCommand cmd;
+            public void sql()
+            {
+                Console.WriteLine("Reached class:");
+                readtxt("inputdata.txt");
+                
+                con.Open();
+                Node cu = head;
+                while(cu.next != null)
+                {
+                    cmd = new SqlCommand("insert into Basketball values('" + cu.last + "', '" + cu.first + "', '" + cu.age + "', '" + cu.min + "', '" + cu.fieldGoal + "', '" + cu.fgAttempts + "')", con);
+                    cmd.ExecuteNonQuery();
+                    cu = cu.next;
+                }
+
+
+                con.Close();
+
+            }
+        }
 
         static void Main(string[] args)
         {
             //reading text file and adding to linked list;
-            LinkList l = new LinkList();
-            l.readtxt("inputdata.txt");
-
-
+            //LinkList l = new LinkList();
+            //l.readtxt("inputdata.txt");
+            sqlclass s = new sqlclass();
+            s.sql();
 
             Console.ReadLine();
         }
