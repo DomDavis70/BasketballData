@@ -1,3 +1,12 @@
 # BasketballData
-Reads in data from text file, feeds it into linked list, then stores it in a SQL database
+Reads in data from text file, feeds it into a manually implemented linked list, then stores it in a SQL database
+
+The fields in the SQL database are:
+Last (name)
+First (name)
+Age
+Min (Minutes Played)
+fieldGoal (Shots made)
+fgAttempts (Shots Attempted)
+
 
