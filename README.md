@@ -11,4 +11,6 @@ fgAttempts (Shots Attempted)
 
 
 (Soon to add)
-Menu to add, delete, update, and sort within Linked List and SQL Database
+Menu to add, delete, update, and sort within Linked List 
+and 
+delete update in the SQL Database
