@@ -50,7 +50,6 @@ namespace BasketballData
                 Node temp = new Node(tlast, tfirst, tage, tmin, tfieldGoal, tfgAttempts);
                 if (head == null)
                 {
-                    //already set to data and null
                     head = temp;
                     count++;
                 }
@@ -108,7 +107,9 @@ namespace BasketballData
                     while ((s = sr.ReadLine()) != null)
                     {
                         s = s.Replace(" ", String.Empty);
+                        //delimit by comma
                         string[] tokens = s.Split(',');
+                        //add to linked list
                         addend(tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], tokens[5]);
                     }
                 }
@@ -116,39 +117,34 @@ namespace BasketballData
 
             }
 
-        }
-
-        public partial class sqlclass : LinkList
-        {
             SqlConnection con = new SqlConnection(@"Data Source=DESKTOP-7P99TDD\MYMSSQLSERVER;Initial Catalog=Project1;Integrated Security=True;");
             SqlCommand cmd;
             public void sql()
             {
-                Console.WriteLine("Reached class:");
-                readtxt("inputdata.txt");
-                
+                //reads file and adds it to linked list
+
                 con.Open();
                 Node cu = head;
-                while(cu.next != null)
+                while (cu.next != null)
                 {
+                    //Inserts values into SQL
                     cmd = new SqlCommand("insert into Basketball values('" + cu.last + "', '" + cu.first + "', '" + cu.age + "', '" + cu.min + "', '" + cu.fieldGoal + "', '" + cu.fgAttempts + "')", con);
                     cmd.ExecuteNonQuery();
                     cu = cu.next;
                 }
 
-
                 con.Close();
-
             }
+
         }
+
 
         static void Main(string[] args)
         {
-            //reading text file and adding to linked list;
-            //LinkList l = new LinkList();
-            //l.readtxt("inputdata.txt");
-            sqlclass s = new sqlclass();
-            s.sql();
+            LinkList l = new LinkList();
+            //calls class containing SQL command
+            l.readtxt("inputdata.txt");
+            l.sql();
 
             Console.ReadLine();
         }
