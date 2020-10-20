@@ -8,6 +8,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
+using System.Xml.Serialization;
+using System.Collections;
+using System.Security.Policy;
+using System.Runtime.InteropServices;
 
 namespace BasketballData
 {
@@ -15,12 +19,7 @@ namespace BasketballData
     {
         public class Node
         {
-            public string last;
-            public string first;
-            public string age;
-            public string min; // minutes played
-            public string fieldGoal; // field goals
-            public string fgAttempts; // field goals attempted
+            public string last, first, age, min, fieldGoal, fgAttempts;
 
             public Node next;
 
@@ -84,6 +83,67 @@ namespace BasketballData
                 }
             }
 
+            public void search(string name)
+            {
+                int index = 1;
+                Node cu = head;
+                while(cu.next != null)
+                {
+                    if(cu.last == name)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        cu = cu.next;
+                    }
+                    index++;
+                }
+                Console.WriteLine("Search complete! Index: " + index + "\n" + cu.last + ", " + cu.first + ", " + cu.age + ", " + cu.min + ", " + cu.fieldGoal + ", " + cu.fgAttempts);
+            }
+
+            public void delete(string name)
+            {
+                if (head == null)
+                {
+                    Console.WriteLine("Empty List!!!!!!!!");
+                    return;
+                }
+                else
+                {
+                    Node cu = head;
+                    Node prev = null;
+
+                    while(cu != null)
+                    {
+                        if(cu.last == name)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            prev = cu;
+                            cu = cu.next;
+                        }
+                        if (cu == null)
+                        {
+                            Console.WriteLine("Couldnt find player");
+                        }
+                        else
+                        {
+                            if(head == cu)
+                            {
+                                head = head.next;
+                            }
+                            else
+                            {
+                                prev.next = cu.next;
+                            }
+                        }
+                    }
+                }
+            }
+
             public void print(Node head)
             {
                 if (head == null)
@@ -114,6 +174,7 @@ namespace BasketballData
                     }
                 }
                 print(head);
+                Console.WriteLine("\n\n");
 
             }
 
@@ -138,16 +199,105 @@ namespace BasketballData
 
         }
 
+        public struct MenuChoice
+        {
+            public string last, first, age, min, fieldGoal, fgAttempts;
+        };
+
+        public static MenuChoice casefunc()
+        {
+            MenuChoice m;
+            Console.WriteLine("Please enter values in order: Last Name, First Name, Age, Minutes, Field Goals, Field Goal Attempts");
+            m.last = Console.ReadLine();
+            m.first = Console.ReadLine();
+            m.age = Console.ReadLine();
+            m.min = Console.ReadLine();
+            m.fieldGoal = Console.ReadLine();
+            m.fgAttempts = Console.ReadLine();
+
+            return m;
+        }  /// makes the main easier to read
+
+        public static int menu()
+        {
+
+            Console.WriteLine("1. Add Beginning");
+            Console.WriteLine("2. Add Middle");
+            Console.WriteLine("3. Add End");
+            Console.WriteLine("4. Search Node");
+            Console.WriteLine("5. Delete Node");
+            Console.WriteLine("6. Quit");
+            Console.Write("Choose an option: ");
+            int choice = Convert.ToInt32(Console.ReadLine());
+            return choice;
+        }
 
         static void Main(string[] args)
         {
             LinkList l = new LinkList();
-            //calls class containing SQL command
+            // reads file and adds it to linked list
             l.readtxt("inputdata.txt");
-            l.sql();
+
+
+            //////MENU
+
+            int choice = 0;
+            MenuChoice m;
+            while (choice != 6)
+            {
+                choice = menu();
+                switch (choice)
+                {
+                    case 1:  //add beginning
+                        m = casefunc();
+                        l.addbeg(m.last, m.first, m.age, m.min, m.fieldGoal, m.fgAttempts);
+                        l.print(l.head);
+                        Console.WriteLine("\n");
+                        break;
+                    case 2: // addmiddle TODO
+                        m = casefunc();
+                        //l.addbeg(last, first, age, min, fieldGoal, fgAttempts);
+                        l.print(l.head);
+                        Console.WriteLine("\n");
+                        break;
+                    case 3:  // add end
+                        m = casefunc();
+                        l.addend(m.last, m.first, m.age, m.min, m.fieldGoal, m.fgAttempts);
+                        l.print(l.head);
+                        Console.WriteLine("\n");
+                        break;
+                    case 4:  // search by last name
+                        Console.Write("Choose last name to search: ");
+                        string lname = Console.ReadLine();
+                        l.search(lname);
+                        Console.WriteLine("\n");
+                        break;
+                    case 5:  // delete, doesnt fully work yet
+                        Console.Write("Choose last name to delete: ");
+                        lname = Console.ReadLine();
+                        l.delete(lname);
+                        l.print(l.head);
+                        Console.WriteLine("\n");
+                        break;
+                    case 6:
+                        break;
+                }
+            }
+
+            Console.WriteLine("Do you want to add the data to the SQL database? Y/N");
+            string decision = Console.ReadLine();
+            if(decision == "Y")
+            {
+                //adds to SQL database
+                l.sql();
+            }
+            else
+            {
+                return;
+            }
+
 
             Console.ReadLine();
         }
-
     }
 }
